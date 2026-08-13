@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>テキスト便利変換ツール</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="main-card">
+        <!-- タブメニュー -->
+        <div class="tabs-container">
+            <div class="tabs">
+                
+                
+                <button class="tab-btn active color-reds" data-target="contentReds">⚽ レッズ検索</button>
+                <button class="tab-btn color-template" data-target="contentTemplate">📧 テンプレ</button>
+                <button class="tab-btn color-linebreak" data-target="contentLineBreak">✂️ 改行</button>
+                <button class="tab-btn color-zenhan" data-target="contentZenHan">Ａa 全半</button>
+                <button class="tab-btn color-calendar" data-target="contentCalendar">📅 カレンダー</button>
+                <button class="tab-btn color-markdown" data-target="contentMarkdown">📝 MD変換</button>
+                <button class="tab-btn color-html" data-target="contentHtmlStripper">🏷️ タグ除去</button>
+                <button class="tab-btn color-random" data-target="contentRandom">🎲 乱文字生成</button>
+
+
+            </div>
+        </div>
+
+        <div class="content-area">
+            
+            <!-- メールテンプレート (Purple) -->
+            <div id="contentTemplate" class="tab-content theme-template">
+                <div class="header-area">
+                    <h2>📧 定型メール作成</h2>
+                    <p class="desc">点線以下は赤字でコピーされます。</p>
+                </div>
+
+                <div class="toolbar">
+                    <button id="resetTemplateBtn" class="sm-btn">🔄 リセット</button>
+                </div>
+                
+                <!-- 編集可能なリッチテキストエリア -->
+                <div id="templateEditor" class="rich-editor" contenteditable="true"></div>
+                
+                <div class="btn-group">
+                    <button id="copyTemplateBtn" class="primary-btn">📋 書式付きコピー</button>
+                </div>
+                <div id="msgTemplate" class="message"></div>
+            </div>
+
+            <!-- ⚽ レッズ検索 (Red) -->
+            <div id="contentReds" class="tab-content active theme-reds">
+                <div class="header-area">
+                    <h2>⚽ レッズ検索</h2>
+                    <p class="desc">公式サイトや公式SNSから情報を素早く検索します。</p>
+                </div>
+                
+                <label>🔍 検索キーワード</label>
+                <input type="text" id="redsSearchQuery" placeholder="例：チケット, 移籍, 試合結果">
+
+                <div class="date-controls">
+                    <label>📅 期間指定（任意）</label>
+                    <div class="quick-dates">
+                        <button class="quick-date-btn" data-days="0">今日</button>
+                        <button class="quick-date-btn" data-days="1">昨日</button>
+                        <button class="quick-date-btn" data-days="7">1週間</button>
+                        <button class="quick-date-btn" data-days="30">1ヶ月前〜</button>
+                        <button class="quick-date-btn" id="redsDateClear">クリア</button>
+                    </div>
+                    <div class="date-inputs">
+                        <input type="date" id="redsDateStart">
+                        <span class="date-separator">〜</span>
+                        <input type="date" id="redsDateEnd">
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button id="redsGoogleBtn" class="primary-btn">🌐 サイト内検索</button>
+                    <button id="redsXBtn" class="action-btn">𝕏 公式ポスト検索</button>
+                </div>
+                <div id="msgReds" class="message"></div>
+            </div>
+<!-- 2. 改行修正 (Blue) -->
+            <div id="contentLineBreak" class="tab-content theme-linebreak">
+                <div class="header-area">
+                    <h2>✂️ 改行修正</h2>
+                    <p class="desc">不要な空行を詰めてスッキリさせます。</p>
+                </div>
+                
+                <label>📄 元のテキスト</label>
+                <textarea id="inputTextLB" placeholder="ここにテキストを貼り付け..."></textarea>
+                
+                <div class="btn-row">
+                    <button id="copyBtnLB" class="primary-btn">📋 コピー</button>
+                    <button id="clearBtnLB" class="secondary-btn">🗑️ クリア</button>
+                </div>
+                <div id="msgLB" class="message"></div>
+
+                <label>✨ 修正後</label>
+                <textarea id="outputTextLB" readonly class="read-only-box"></textarea>
+            </div>
+
+            <!-- 3. 全角→半角変換 (Indigo) -->
+            <div id="contentZenHan" class="tab-content theme-zenhan">
+                <div class="header-area">
+                    <h2>Ａa 全角→半角変換</h2>
+                    <p class="desc">英数字を半角に。「？」はそのまま維持します。</p>
+                </div>
+                
+                <label>📄 元のテキスト</label>
+                <textarea id="inputTextZH" placeholder="ここにテキストを貼り付け..."></textarea>
+                
+                <div class="btn-row">
+                    <button id="copyBtnZH" class="primary-btn">📋 コピー</button>
+                    <button id="clearBtnZH" class="secondary-btn">🗑️ クリア</button>
+                </div>
+                <div id="msgZH" class="message"></div>
+
+                <label>✨ 変換後 (黄色は変換箇所)</label>
+                <div id="outputTextZH" class="output-div" contenteditable="false"></div>
+            </div>
+            <!-- 4. 調整カレンダー (Orange) -->
+            <div id="contentCalendar" class="tab-content theme-calendar">
+                <div class="header-area">
+                    <h2>📅 調整カレンダー</h2>
+                    <p class="desc">日ごとの条件を正確に作成し、送る相手に合わせた形で出力します。</p>
+                </div>
+
+                <div class="calendar-controls">
+                    <div class="mode-switch" aria-label="表示切替">
+                        <button id="modeMonth" type="button" class="mode-btn">月表示</button>
+                        <button id="modeWeek" type="button" class="mode-btn active">週表示</button>
+                    </div>
+                    <div class="nav-controls">
+                        <button id="calPrev" type="button" class="nav-btn" aria-label="前へ">◀</button>
+                        <span id="calCurrentDisplay" aria-live="polite"></span>
+                        <button id="calNext" type="button" class="nav-btn" aria-label="次へ">▶</button>
+                    </div>
+                </div>
+
+                <div id="calendarTimeToolbar" class="calendar-time-toolbar">
+                    <div class="calendar-time-toolbar-top">
+                        <span class="calendar-tool-label">時間を選ぶ</span>
+                        <div class="calendar-selection-modes" role="group" aria-label="時間の選択方法">
+                            <button id="calSelectionRange" type="button" class="cal-select-mode active">⏱ 時間帯</button>
+                            <button id="calSelectionOnward" type="button" class="cal-select-mode">→ 以降</button>
+                        </div>
+                    </div>
+                    <p id="calSelectionGuide" class="calendar-selection-guide">同じ日の列を上から下へドラッグ。30分単位で時間幅を指定できます。横方向には広がりません。</p>
+                </div>
+
+                <div id="calendarDateToolbar" class="calendar-date-toolbar" hidden>
+                    <label class="calendar-date-preset-label" for="calDatePreset">
+                        <span>日付だけの条件</span>
+                        <select id="calDatePreset" aria-label="日付だけの条件">
+                            <option value="unspecified" selected>時間未定</option>
+                            <option value="allday">終日</option>
+                            <option value="morning">午前</option>
+                            <option value="afternoon">午後</option>
+                            <option value="night">夜</option>
+                        </select>
+                    </label>
+                    <p class="calendar-selection-guide">条件を選んで日付をクリック。日付ごとにカード化され、あとから時間やメモを編集できます。</p>
+                </div>
+
+                <div class="scroll-wrapper calendar-scroll-wrapper">
+                    <div id="calendarContainer"></div>
+                </div>
+
+                <div class="calendar-output-options">
+                    <label class="calendar-inline-option">
+                        <span>曜日表示</span>
+                        <select id="calWeekdayFormat" aria-label="曜日表示の形式">
+                            <option value="plain" selected>7/8水</option>
+                            <option value="brackets">7/8(水)</option>
+                            <option value="none">表示しない</option>
+                        </select>
+                    </label>
+                    <label class="calendar-inline-option">
+                        <span>出力形式</span>
+                        <select id="calOutputFormat" aria-label="出力形式">
+                            <option value="bullet" selected>箇条書き（・）</option>
+                            <option value="chat">チャット向け</option>
+                            <option value="compact">省略</option>
+                        </select>
+                    </label>
+                    <label class="calendar-inline-option calendar-merge-option">
+                        <input id="calMergeConsecutive" type="checkbox" checked>
+                        <span>同じ条件の連続日程をまとめる</span>
+                    </label>
+                </div>
+
+                <div id="calendarConflictSummary" class="calendar-conflict-summary" hidden role="status">
+                    <strong>⚠ 条件の重なり</strong>
+                    <div id="calendarConflictList"></div>
+                </div>
+
+                <div class="calendar-selection-summary">
+                    <div class="calendar-summary-header">
+                        <span>選択中の条件</span>
+                        <button id="undoCalBtn" type="button" class="calendar-mini-btn" disabled>↩ 直前を戻す</button>
+                    </div>
+                    <div id="calendarUndoBar" class="calendar-undo-bar" hidden>
+                        <span id="calendarUndoMessage"></span>
+                        <button id="restoreCalBtn" type="button">元に戻す</button>
+                    </div>
+                    <div id="calendarSelectionList" class="calendar-selection-list"></div>
+                </div>
+
+                <div class="output-section">
+                    <label for="outputCal">✅ 出力（そのまま編集も可）</label>
+                    <textarea id="outputCal" rows="5" placeholder="カレンダーで選ぶと、ここに出力されます"></textarea>
+
+                    <div class="btn-row calendar-button-row">
+                        <button id="copyBtnCal" type="button" class="primary-btn">📋 コピー</button>
+                        <button id="clearBtnCal" type="button" class="secondary-btn">🗑️ 全てクリア</button>
+                    </div>
+                    <div id="msgCal" class="message"></div>
+                </div>
+            </div>
+
+
+
+            <!-- 5. リッチテキスト→MD (Pink) -->
+            <div id="contentMarkdown" class="tab-content theme-markdown">
+                <div class="header-area">
+                    <h2>📝 リッチテキスト → MD</h2>
+                    <p class="desc">Webページのコピー等をMarkdown記法に変換。</p>
+                </div>
+                
+                <label>📄 貼り付けエリア (Ctrl+V)</label>
+                <div id="inputMD" class="output-div editable" contenteditable="true" placeholder="ここに貼り付けてください..."></div>
+
+                <div class="encoding-options" role="group" aria-labelledby="mdCharModeTitle">
+                    <div id="mdCharModeTitle" class="encoding-title">💾 出力文字の設定</div>
+                    <label class="encoding-option">
+                        <input type="radio" name="md-char-mode" value="sjis-replace-emoji" checked>
+                        <span class="encoding-option-text"><strong>SJIS安全・絵文字は [絵文字] に置換</strong><small>SakuraでSJIS保存する前提。非対応の記号や文字も安全な表記へ直します。</small></span>
+                    </label>
+                    <label class="encoding-option">
+                        <input type="radio" name="md-char-mode" value="sjis-remove-emoji">
+                        <span class="encoding-option-text"><strong>SJIS安全・絵文字を削除</strong><small>保存エラーを避けたいが、絵文字の表記も不要な場合。</small></span>
+                    </label>
+                    <label class="encoding-option">
+                        <input type="radio" name="md-char-mode" value="sjis-keep-emoji">
+                        <span class="encoding-option-text"><strong>記号だけSJIS向けに整形</strong><small>絵文字は残します。SJISで保存すると、絵文字では警告が出ます。</small></span>
+                    </label>
+                    <label class="encoding-option encoding-option-recommended">
+                        <input type="radio" name="md-char-mode" value="utf8-sakura-safe">
+                        <span class="encoding-option-text"><strong>UTF-8・Sakura向け安全整形 <span class="option-badge">推奨</span></strong><small>通常の日本語・記号は残しつつ、不可視文字・制御文字・方向制御文字を整理。絵文字と補助面文字は [絵文字]／[補助面文字] に置換します。</small></span>
+                    </label>
+                    <label class="encoding-option">
+                        <input type="radio" name="md-char-mode" value="utf8-sakura-keep-emoji">
+                        <span class="encoding-option-text"><strong>UTF-8・Sakura向け整形（絵文字を残す）</strong><small>不可視文字などは整形し、絵文字は残します。保存時に警告が出る場合は、上の「安全整形」を選んでください。</small></span>
+                    </label>
+                    <label class="encoding-option">
+                        <input type="radio" name="md-char-mode" value="utf8-raw">
+                        <span class="encoding-option-text"><strong>UTF-8・そのまま（変換なし）</strong><small>文字を一切整形せず、貼り付けた内容を優先します。</small></span>
+                    </label>
+                    <label class="summary-toggle">
+                        <input type="checkbox" id="mdShowSanitizeSummary" checked>
+                        変換・削除した文字を結果の下に表示する
+                    </label>
+                </div>
+                
+                <div class="btn-row">
+                    <button id="copyBtnMD" class="primary-btn">📋 コピー</button>
+                    <button id="clearBtnMD" class="secondary-btn">🗑️ クリア</button>
+                </div>
+                <div id="msgMD" class="message"></div>
+
+                <label>✨ Markdown結果</label>
+                <textarea id="outputMD" readonly class="read-only-box"></textarea>
+                <details id="mdSanitizeDetails" class="sanitize-details is-hidden" open>
+                    <summary id="mdSanitizeDetailsSummary">変換・削除した文字の一覧</summary>
+                    <div id="mdSanitizeList" class="sanitize-list"></div>
+                </details>
+                <div id="mdSanitizeStatus" class="compatibility-status is-hidden" aria-live="polite"></div>
+            </div>
+
+            <!-- 6. HTMLタグ除去 (Gray) -->
+            <div id="contentHtmlStripper" class="tab-content theme-html">
+                <div class="header-area">
+                    <h2>🏷️ HTMLタグ除去</h2>
+                    <p class="desc">タグを取り除いてテキストだけ抽出します。</p>
+                </div>
+                
+                <label>📄 HTMLソース</label>
+                <textarea id="inputHtml" placeholder="<div>...</div>"></textarea>
+                
+                <div class="btn-row">
+                    <button id="convertBtnHtml" class="action-btn">⚡ 変換</button>
+                    <button id="copyBtnHtml" class="primary-btn">📋 コピー</button>
+                    <button id="clearBtnHtml" class="secondary-btn">🗑️ クリア</button>
+                </div>
+                <div id="msgHtml" class="message"></div>
+                <div class="counter-badge" id="counterHtml">0文字 / 0行</div>
+
+                <label>✨ 抽出テキスト</label>
+                <textarea id="outputHtml" readonly class="read-only-box"></textarea>
+            </div>
+
+            <!-- 7. ランダム文字列生成 (Teal) -->
+            <div id="contentRandom" class="tab-content theme-random">
+                <div class="header-area">
+                    <h2>🎲 乱文字生成</h2>
+                    <p class="desc">パスワードやダミーデータの作成に。1件生成時は自動でコピーします。1件生成時は自動でコピーします。</p>
+                </div>
+                
+                <label>🔠 使用する文字</label>
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                    <label style="display: inline-flex; align-items: center; font-weight: normal; margin: 0; color: var(--text-main);">
+                        <input type="checkbox" id="chkUpper" checked style="width: auto; margin-right: 4px;"> 大文字
+                    </label>
+                    <label style="display: inline-flex; align-items: center; font-weight: normal; margin: 0; color: var(--text-main);">
+                        <input type="checkbox" id="chkLower" checked style="width: auto; margin-right: 4px;"> 小文字
+                    </label>
+                    <label style="display: inline-flex; align-items: center; font-weight: normal; margin: 0; color: var(--text-main);">
+                        <input type="checkbox" id="chkNum" checked style="width: auto; margin-right: 4px;"> 数字
+                    </label>
+                    <label style="display: inline-flex; align-items: center; font-weight: normal; margin: 0; color: var(--text-main);">
+                        <input type="checkbox" id="chkSymPart" checked style="width: auto; margin-right: 4px;"> 記号(一部)
+                    </label>
+                    <label style="display: inline-flex; align-items: center; font-weight: normal; margin: 0; color: var(--text-main);">
+                        <input type="checkbox" id="chkSymAll" style="width: auto; margin-right: 4px;"> 記号(全て)
+                    </label>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <div style="flex: 1;">
+                        <label>📏 文字数</label>
+                        <input type="number" id="randomLength" value="20" min="1">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>🔢 発行数（最大100）</label>
+                        <input type="number" id="randomCount" value="1" min="1" max="100">
+                    </div>
+                </div>
+                
+                <div class="btn-group">
+                    <button id="generateRandomBtn" class="action-btn">⚡ 生成</button>
+                </div>
+                <div id="msgRandom" class="message"></div>
+
+                <label>✨ 生成結果</label>
+                <textarea id="outputRandom" readonly class="read-only-box" style="height: 120px;"></textarea>
+                
+                <div class="btn-row">
+                    <button id="copyBtnRandom" class="primary-btn">📋 コピー</button>
+                    <button id="clearBtnRandom" class="secondary-btn">🗑️ クリア</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="sidepanel.js"></script>
+</body>
+</html>
