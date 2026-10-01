@@ -7,7 +7,6 @@
     --color-calendar: #ea580c;  /* Orange */
     --color-markdown: #db2777;  /* Pink */
     --color-html: #4b5563;      /* Gray */
-    --color-reds: #dc2626;      /* Red: レッズ検索用 */
     --color-random: #0d9488;    /* Teal: ランダム文字列用 */
     
     --bg-color: #f8fafc;
@@ -59,8 +58,8 @@ body {
 .tab-btn {
     flex: 1 0 auto;
     padding: 8px 12px;
-    border: none;
-    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    background: #fff;
     color: var(--text-light);
     font-size: 11px;
     font-weight: bold;
@@ -72,60 +71,59 @@ body {
 }
 
 .tab-btn:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
+    background: #f8fafc;
+    border-color: #cbd5e1;
 }
 
 .tab-btn.active { 
     color: white !important;
+    border-color: transparent;
     transform: translateY(-1px); 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.15); 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.12); 
 }
 
 /* --- テーマ別タブスタイル --- */
 
 /* 1. Template (Purple) */
-.tab-btn.color-template { background: color-mix(in srgb, var(--color-template), white 90%); color: var(--color-template); }
-.tab-btn.color-template:hover { background: color-mix(in srgb, var(--color-template), white 80%); }
+.tab-btn.color-template { background: #fff; color: var(--color-template); }
+.tab-btn.color-template:hover { background: color-mix(in srgb, var(--color-template), white 95%); }
 .tab-btn.active.color-template { background: var(--color-template); }
 
-/* 2. Reds (Red) */
-.tab-btn.color-reds { background: color-mix(in srgb, var(--color-reds), white 90%); color: var(--color-reds); }
-.tab-btn.color-reds:hover { background: color-mix(in srgb, var(--color-reds), white 80%); }
-.tab-btn.active.color-reds { background: var(--color-reds); }
 
 /* 3. Gemini (Green) */
-.tab-btn.color-gemini { background: color-mix(in srgb, var(--color-gemini), white 90%); color: var(--color-gemini); }
-.tab-btn.color-gemini:hover { background: color-mix(in srgb, var(--color-gemini), white 80%); }
+.tab-btn.color-gemini { background: #fff; color: var(--color-gemini); }
+.tab-btn.color-gemini:hover { background: color-mix(in srgb, var(--color-gemini), white 95%); }
 .tab-btn.active.color-gemini { background: var(--color-gemini); }
 
 /* 4. LineBreak (Blue) */
-.tab-btn.color-linebreak { background: color-mix(in srgb, var(--color-linebreak), white 90%); color: var(--color-linebreak); }
-.tab-btn.color-linebreak:hover { background: color-mix(in srgb, var(--color-linebreak), white 80%); }
+.tab-btn.color-linebreak { background: #fff; color: var(--color-linebreak); }
+.tab-btn.color-linebreak:hover { background: color-mix(in srgb, var(--color-linebreak), white 95%); }
 .tab-btn.active.color-linebreak { background: var(--color-linebreak); }
 
 /* 5. ZenHan (Indigo) */
-.tab-btn.color-zenhan { background: color-mix(in srgb, var(--color-zenhan), white 90%); color: var(--color-zenhan); }
-.tab-btn.color-zenhan:hover { background: color-mix(in srgb, var(--color-zenhan), white 80%); }
+.tab-btn.color-zenhan { background: #fff; color: var(--color-zenhan); }
+.tab-btn.color-zenhan:hover { background: color-mix(in srgb, var(--color-zenhan), white 95%); }
 .tab-btn.active.color-zenhan { background: var(--color-zenhan); }
 
 /* 6. Calendar (Orange) */
-.tab-btn.color-calendar { background: color-mix(in srgb, var(--color-calendar), white 90%); color: var(--color-calendar); }
-.tab-btn.color-calendar:hover { background: color-mix(in srgb, var(--color-calendar), white 80%); }
+.tab-btn.color-calendar { background: #fff; color: var(--color-calendar); }
+.tab-btn.color-calendar:hover { background: color-mix(in srgb, var(--color-calendar), white 95%); }
 .tab-btn.active.color-calendar { background: var(--color-calendar); }
 
 /* 7. Markdown (Pink) */
-.tab-btn.color-markdown { background: color-mix(in srgb, var(--color-markdown), white 90%); color: var(--color-markdown); }
-.tab-btn.color-markdown:hover { background: color-mix(in srgb, var(--color-markdown), white 80%); }
+.tab-btn.color-markdown { background: #fff; color: var(--color-markdown); }
+.tab-btn.color-markdown:hover { background: color-mix(in srgb, var(--color-markdown), white 95%); }
 .tab-btn.active.color-markdown { background: var(--color-markdown); }
 
 /* 8. HTML (Gray) */
-.tab-btn.color-html { background: color-mix(in srgb, var(--color-html), white 90%); color: var(--color-html); }
-.tab-btn.color-html:hover { background: color-mix(in srgb, var(--color-html), white 80%); }
+.tab-btn.color-html { background: #fff; color: var(--color-html); }
+.tab-btn.color-html:hover { background: color-mix(in srgb, var(--color-html), white 95%); }
 .tab-btn.active.color-html { background: var(--color-html); }
 
 /* 9. Random (Teal) */
-.tab-btn.color-random { background: color-mix(in srgb, var(--color-random), white 90%); color: var(--color-random); }
-.tab-btn.color-random:hover { background: color-mix(in srgb, var(--color-random), white 80%); }
+.tab-btn.color-random { background: #fff; color: var(--color-random); }
+.tab-btn.color-random:hover { background: color-mix(in srgb, var(--color-random), white 95%); }
 .tab-btn.active.color-random { background: var(--color-random); }
 
 
@@ -161,7 +159,6 @@ h2 {
 }
 /* テーマごとの見出し色 */
 .theme-template h2 { color: var(--color-template); }
-.theme-reds h2 { color: var(--color-reds); }
 .theme-gemini h2 { color: var(--color-gemini); }
 .theme-linebreak h2 { color: var(--color-linebreak); }
 .theme-zenhan h2 { color: var(--color-zenhan); }
@@ -206,7 +203,6 @@ input:focus, textarea:focus, .output-div:focus, .rich-editor:focus {
 
 /* テーマごとのフォーカス色 */
 .theme-template .rich-editor:focus { border-color: var(--color-template); box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1); }
-.theme-reds input:focus { border-color: var(--color-reds); box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1); }
 .theme-gemini input:focus, .theme-gemini textarea:focus { border-color: var(--color-gemini); box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1); }
 .theme-linebreak textarea:focus { border-color: var(--color-linebreak); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
 .theme-zenhan textarea:focus { border-color: var(--color-zenhan); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
@@ -298,7 +294,6 @@ button:disabled {
 /* プライマリボタン */
 .primary-btn { color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 .theme-template .primary-btn { background: var(--color-template); }
-.theme-reds .primary-btn { background: var(--color-reds); }
 .theme-gemini .primary-btn { background: var(--color-gemini); }
 .theme-linebreak .primary-btn { background: var(--color-linebreak); }
 .theme-zenhan .primary-btn { background: var(--color-zenhan); }
@@ -313,58 +308,6 @@ button:disabled {
 
 .action-btn { background: #475569; color: white; }
 .action-btn:hover { background: #334155; }
-
-
-/* --- レッズ検索専用スタイル --- */
-.date-controls {
-    background: color-mix(in srgb, var(--color-reds), white 95%);
-    padding: 12px;
-    border-radius: var(--border-radius);
-    border: 1px solid color-mix(in srgb, var(--color-reds), white 80%);
-    margin: 8px 0;
-}
-
-.quick-dates {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 10px;
-}
-
-.quick-date-btn {
-    flex: 1;
-    min-width: 50px;
-    padding: 4px 2px;
-    font-size: 10px;
-    background: white;
-    color: var(--color-reds);
-    border: 1px solid var(--color-reds);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.quick-date-btn:hover {
-    background: var(--color-reds);
-    color: white;
-}
-
-.date-inputs {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.date-inputs input[type="date"] {
-    flex: 1;
-    font-size: 11px;
-    padding: 4px 6px;
-}
-
-.date-separator {
-    font-size: 12px;
-    color: var(--text-light);
-}
 
 
 /* --- 調整カレンダー --- */
