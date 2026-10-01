@@ -1,4 +1,35 @@
-テキスト便利変換ツール v2.2
+テキスト便利変換ツール v2.3
+
+【v2.3の修正｜機能モジュール化】
+・sidepanel.js を「起動専用」に縮小
+  - 各ツールのDOM操作・イベント・変換処理を features/ に分離
+  - sidepanel.js はタブ初期化、機能起動、右クリック受け渡しだけを担当
+
+・7機能を独立モジュール化
+  - template.js
+  - linebreak.js
+  - zenhan.js
+  - calendar.js
+  - markdown.js
+  - html-stripper.js
+  - random.js
+
+・共通UI処理を core/ へ分離
+  - tabs.js：タブ復元、ARIA、キーボード操作
+  - ui.js：改行正規化、メッセージ、クリップボード
+
+・右クリック連携も機能API経由に変更
+  - bootstrap が入力欄のDOM構造を直接知らない設計
+  - 改行修正／全半角変換は setText() だけ公開
+
+・コピー通知を安定化
+  - 連続コピー時は古いタイマーを解除
+  - 古い通知タイマーが新しい通知を途中で消す挙動を防止
+
+・検証を強化
+  - 全ES moduleを node --check
+  - sidepanel.js が再び巨大化していないか監視
+  - featureモジュール欠落、未使用テーマ、旧機能残骸も確認
 
 【v2.2の修正｜裏側の整理とUX基盤】
 ・共通設定を app-core.js に集約
