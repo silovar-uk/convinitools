@@ -55,6 +55,21 @@ assert(/storage\.session/.test(js), 'pending handoff must use storage.session');
 assert(!/localStorage\.setItem\(LAST_TOOL_KEY/.test(js), 'last tool must not be stored in localStorage');
 assert(/TOOL_REGISTRY/.test(core), 'tool registry is required');
 
+const registryIds = [...core.matchAll(/\bid: '(content[A-Za-z]+)'/g)].map(m => m[1]);
+assert(registryIds.length === tabTargets.length, 'tool registry and tab count must match');
+assert(registryIds.every(id => tabTargets.includes(id)), 'every registered tool must have a tab');
+assert(tabTargets.every(id => registryIds.includes(id)), 'every tab must be registered');
+
+const contextMenuIds = [...core.matchAll(/\bid: '(open_[^']+)'/g)].map(m => m[1]);
+assert(new Set(contextMenuIds).size === contextMenuIds.length, 'context menu ids must be unique');
+
+const cssThemeTokens = [...new Set([...css.matchAll(/\.(?:color|theme)-([a-z-]+)/g)].map(m => m[1]))];
+const htmlThemeTokens = [...new Set([...html.matchAll(/(?:color|theme)-([a-z-]+)/g)].map(m => m[1]))];
+assert(
+    cssThemeTokens.every(token => htmlThemeTokens.includes(token)),
+    'CSS contains an unused tool theme'
+);
+
 if (failures.length) {
     console.error('Verification failed:');
     failures.forEach(item => console.error(`- ${item}`));
