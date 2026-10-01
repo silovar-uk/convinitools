@@ -245,6 +245,11 @@ textarea {
     font-weight: bold;
 }
 
+.template-warning {
+    background: #fef08a;
+    font-weight: bold;
+}
+
 .toolbar {
     display: flex;
     justify-content: flex-end;
