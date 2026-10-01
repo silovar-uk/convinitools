@@ -1,61 +1,56 @@
-// インストール・更新時、またはブラウザ起動時に初期化
-chrome.runtime.onInstalled.addListener(() => {
-    initializeContextMenus();
-});
+import {
+    STORAGE_KEYS,
+    createRequestId,
+    getContextMenuTools,
+    getToolByContextMenuId
+} from './app-core.js';
 
-chrome.runtime.onStartup.addListener(() => {
-    initializeContextMenus();
-});
-
-// アイコンクリックでサイドパネルを開く設定
-// (Chrome 114以降で利用可能)
-chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true })
-    .catch((error) => console.error(error));
-
-function initializeContextMenus() {
-    // 既存のメニューをリセット
+const initializeContextMenus = () => {
     chrome.contextMenus.removeAll(() => {
-        // 改行修正
-        chrome.contextMenus.create({
-            id: "open_linebreak",
-            title: "✂️ サイドパネルで改行修正",
-            contexts: ["selection"]
-        });
+        if (chrome.runtime.lastError) {
+            console.warn('既存の右クリックメニューを初期化できませんでした:', chrome.runtime.lastError.message);
+        }
 
-        // MD変換
-        chrome.contextMenus.create({
-            id: "open_markdown",
-            title: "📝 サイドパネルでMD変換",
-            contexts: ["selection"]
+        getContextMenuTools().forEach((tool) => {
+            chrome.contextMenus.create({
+                id: tool.contextMenu.id,
+                title: tool.contextMenu.title,
+                contexts: ['selection']
+            }, () => {
+                if (chrome.runtime.lastError) {
+                    console.warn(`右クリックメニューを作成できませんでした: ${tool.contextMenu.id}`, chrome.runtime.lastError.message);
+                }
+            });
         });
     });
-}
+};
 
-// メニューがクリックされた時の処理
-chrome.contextMenus.onClicked.addListener((info, tab) => {
-    let targetTabId = "";
+chrome.runtime.onInstalled.addListener(initializeContextMenus);
+chrome.runtime.onStartup.addListener(initializeContextMenus);
 
-    if (info.menuItemId === "open_linebreak") {
-        targetTabId = "contentLineBreak";
-    } else if (info.menuItemId === "open_markdown") {
-        targetTabId = "contentMarkdown";
-    }
+chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true })
+    .catch((error) => console.error('サイドパネル動作を設定できませんでした:', error));
 
-    if (targetTabId) {
-        // 選択テキストを保存
-        chrome.storage.local.set({
-            pendingAction: {
-                tabId: targetTabId,
-                text: info.selectionText || ""
-            }
-        }, () => {
-            // サイドパネルを開く
-            // 注意: ユーザー操作（クリック）起因である必要があるため、
-            // Context Menuからの呼び出しはChrome 116以降で動作します。
-            if (tab.windowId) {
-                chrome.sidePanel.open({ windowId: tab.windowId })
-                    .catch((err) => console.error("サイドパネルを開けませんでした:", err));
-            }
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+    const tool = getToolByContextMenuId(info.menuItemId);
+    if (!tool) return;
+
+    const pendingAction = {
+        requestId: createRequestId(),
+        tabId: tool.id,
+        text: info.selectionText || '',
+        createdAt: Date.now()
+    };
+
+    try {
+        await chrome.storage.session.set({
+            [STORAGE_KEYS.PENDING_ACTION]: pendingAction
         });
+
+        if (Number.isInteger(tab?.windowId)) {
+            await chrome.sidePanel.open({ windowId: tab.windowId });
+        }
+    } catch (error) {
+        console.error('選択テキストをサイドパネルへ渡せませんでした:', error);
     }
 });
