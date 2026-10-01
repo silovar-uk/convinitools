@@ -5,21 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>テキスト便利変換ツール</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <div class="main-card">
         <!-- タブメニュー -->
         <div class="tabs-container">
-            <div class="tabs">
-                <button class="tab-btn active color-template" data-target="contentTemplate">📧 テンプレ</button>
-                <button class="tab-btn color-linebreak" data-target="contentLineBreak">✂️ 改行</button>
-                <button class="tab-btn color-zenhan" data-target="contentZenHan">Ａa 全半</button>
-                <button class="tab-btn color-calendar" data-target="contentCalendar">📅 カレンダー</button>
-                <button class="tab-btn color-markdown" data-target="contentMarkdown">📝 MD変換</button>
-                <button class="tab-btn color-html" data-target="contentHtmlStripper">🏷️ タグ除去</button>
-                <button class="tab-btn color-random" data-target="contentRandom">🎲 乱文字生成</button>
+            <div class="tabs" role="tablist" aria-label="便利ツール">
+                <button id="tabTemplate" class="tab-btn active color-template" role="tab" aria-controls="contentTemplate" aria-selected="true" data-target="contentTemplate">📧 テンプレ</button>
+                <button id="tabLineBreak" class="tab-btn color-linebreak" role="tab" aria-controls="contentLineBreak" aria-selected="false" data-target="contentLineBreak">✂️ 改行</button>
+                <button id="tabZenHan" class="tab-btn color-zenhan" role="tab" aria-controls="contentZenHan" aria-selected="false" data-target="contentZenHan">Ａa 全半</button>
+                <button id="tabCalendar" class="tab-btn color-calendar" role="tab" aria-controls="contentCalendar" aria-selected="false" data-target="contentCalendar">📅 カレンダー</button>
+                <button id="tabMarkdown" class="tab-btn color-markdown" role="tab" aria-controls="contentMarkdown" aria-selected="false" data-target="contentMarkdown">📝 MD変換</button>
+                <button id="tabHtmlStripper" class="tab-btn color-html" role="tab" aria-controls="contentHtmlStripper" aria-selected="false" data-target="contentHtmlStripper">🏷️ タグ除去</button>
+                <button id="tabRandom" class="tab-btn color-random" role="tab" aria-controls="contentRandom" aria-selected="false" data-target="contentRandom">🎲 乱文字生成</button>
 
 
             </div>
@@ -28,7 +27,7 @@
         <div class="content-area">
             
             <!-- メールテンプレート (Purple) -->
-            <div id="contentTemplate" class="tab-content active theme-template">
+            <div id="contentTemplate" class="tab-content active theme-template" role="tabpanel" aria-labelledby="tabTemplate">
                 <div class="header-area">
                     <h2>📧 定型メール作成</h2>
                     <p class="desc">点線以下は赤字でコピーされます。</p>
@@ -44,11 +43,11 @@
                 <div class="btn-group">
                     <button id="copyTemplateBtn" class="primary-btn">📋 書式付きコピー</button>
                 </div>
-                <div id="msgTemplate" class="message"></div>
+                <div id="msgTemplate" class="message" role="status" aria-live="polite"></div>
             </div>
 
             <!-- 2. 改行修正 (Blue) -->
-            <div id="contentLineBreak" class="tab-content theme-linebreak">
+            <div id="contentLineBreak" class="tab-content theme-linebreak" role="tabpanel" aria-labelledby="tabLineBreak">
                 <div class="header-area">
                     <h2>✂️ 改行修正</h2>
                     <p class="desc">不要な空行を詰めてスッキリさせます。</p>
@@ -61,14 +60,14 @@
                     <button id="copyBtnLB" class="primary-btn">📋 コピー</button>
                     <button id="clearBtnLB" class="secondary-btn">🗑️ クリア</button>
                 </div>
-                <div id="msgLB" class="message"></div>
+                <div id="msgLB" class="message" role="status" aria-live="polite"></div>
 
                 <label>✨ 修正後</label>
                 <textarea id="outputTextLB" readonly class="read-only-box"></textarea>
             </div>
 
             <!-- 3. 全角→半角変換 (Indigo) -->
-            <div id="contentZenHan" class="tab-content theme-zenhan">
+            <div id="contentZenHan" class="tab-content theme-zenhan" role="tabpanel" aria-labelledby="tabZenHan">
                 <div class="header-area">
                     <h2>Ａa 全角→半角変換</h2>
                     <p class="desc">英数字を半角に。「？」はそのまま維持します。</p>
@@ -81,13 +80,13 @@
                     <button id="copyBtnZH" class="primary-btn">📋 コピー</button>
                     <button id="clearBtnZH" class="secondary-btn">🗑️ クリア</button>
                 </div>
-                <div id="msgZH" class="message"></div>
+                <div id="msgZH" class="message" role="status" aria-live="polite"></div>
 
                 <label>✨ 変換後 (黄色は変換箇所)</label>
                 <div id="outputTextZH" class="output-div" contenteditable="false"></div>
             </div>
             <!-- 4. 調整カレンダー (Orange) -->
-            <div id="contentCalendar" class="tab-content theme-calendar">
+            <div id="contentCalendar" class="tab-content theme-calendar" role="tabpanel" aria-labelledby="tabCalendar">
                 <div class="header-area">
                     <h2>📅 調整カレンダー</h2>
                     <p class="desc">日ごとの条件を正確に作成し、送る相手に合わせた形で出力します。</p>
@@ -182,14 +181,14 @@
                         <button id="copyBtnCal" type="button" class="primary-btn">📋 コピー</button>
                         <button id="clearBtnCal" type="button" class="secondary-btn">🗑️ 全てクリア</button>
                     </div>
-                    <div id="msgCal" class="message"></div>
+                    <div id="msgCal" class="message" role="status" aria-live="polite"></div>
                 </div>
             </div>
 
 
 
             <!-- 5. リッチテキスト→MD (Pink) -->
-            <div id="contentMarkdown" class="tab-content theme-markdown">
+            <div id="contentMarkdown" class="tab-content theme-markdown" role="tabpanel" aria-labelledby="tabMarkdown">
                 <div class="header-area">
                     <h2>📝 リッチテキスト → MD</h2>
                     <p class="desc">Webページのコピー等をMarkdown記法に変換。</p>
@@ -234,7 +233,7 @@
                     <button id="copyBtnMD" class="primary-btn">📋 コピー</button>
                     <button id="clearBtnMD" class="secondary-btn">🗑️ クリア</button>
                 </div>
-                <div id="msgMD" class="message"></div>
+                <div id="msgMD" class="message" role="status" aria-live="polite"></div>
 
                 <label>✨ Markdown結果</label>
                 <textarea id="outputMD" readonly class="read-only-box"></textarea>
@@ -246,7 +245,7 @@
             </div>
 
             <!-- 6. HTMLタグ除去 (Gray) -->
-            <div id="contentHtmlStripper" class="tab-content theme-html">
+            <div id="contentHtmlStripper" class="tab-content theme-html" role="tabpanel" aria-labelledby="tabHtmlStripper">
                 <div class="header-area">
                     <h2>🏷️ HTMLタグ除去</h2>
                     <p class="desc">タグを取り除いてテキストだけ抽出します。</p>
@@ -260,7 +259,7 @@
                     <button id="copyBtnHtml" class="primary-btn">📋 コピー</button>
                     <button id="clearBtnHtml" class="secondary-btn">🗑️ クリア</button>
                 </div>
-                <div id="msgHtml" class="message"></div>
+                <div id="msgHtml" class="message" role="status" aria-live="polite"></div>
                 <div class="counter-badge" id="counterHtml">0文字 / 0行</div>
 
                 <label>✨ 抽出テキスト</label>
@@ -268,37 +267,37 @@
             </div>
 
             <!-- 7. ランダム文字列生成 (Teal) -->
-            <div id="contentRandom" class="tab-content theme-random">
+            <div id="contentRandom" class="tab-content theme-random" role="tabpanel" aria-labelledby="tabRandom">
                 <div class="header-area">
                     <h2>🎲 乱文字生成</h2>
-                    <p class="desc">パスワードやダミーデータの作成に。1件生成時は自動でコピーします。1件生成時は自動でコピーします。</p>
+                    <p class="desc">パスワードやダミーデータの作成に。1件生成時は自動でコピーします。</p>
                 </div>
                 
                 <label>🔠 使用する文字</label>
-                <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
-                    <label style="display: inline-flex; align-items: center; font-weight: normal; margin: 0; color: var(--text-main);">
-                        <input type="checkbox" id="chkUpper" checked style="width: auto; margin-right: 4px;"> 大文字
+                <div class="random-option-grid">
+                    <label class="random-option">
+                        <input type="checkbox" id="chkUpper" checked> 大文字
                     </label>
-                    <label style="display: inline-flex; align-items: center; font-weight: normal; margin: 0; color: var(--text-main);">
-                        <input type="checkbox" id="chkLower" checked style="width: auto; margin-right: 4px;"> 小文字
+                    <label class="random-option">
+                        <input type="checkbox" id="chkLower" checked> 小文字
                     </label>
-                    <label style="display: inline-flex; align-items: center; font-weight: normal; margin: 0; color: var(--text-main);">
-                        <input type="checkbox" id="chkNum" checked style="width: auto; margin-right: 4px;"> 数字
+                    <label class="random-option">
+                        <input type="checkbox" id="chkNum" checked> 数字
                     </label>
-                    <label style="display: inline-flex; align-items: center; font-weight: normal; margin: 0; color: var(--text-main);">
-                        <input type="checkbox" id="chkSymPart" checked style="width: auto; margin-right: 4px;"> 記号(一部)
+                    <label class="random-option">
+                        <input type="checkbox" id="chkSymPart" checked> 記号(一部)
                     </label>
-                    <label style="display: inline-flex; align-items: center; font-weight: normal; margin: 0; color: var(--text-main);">
-                        <input type="checkbox" id="chkSymAll" style="width: auto; margin-right: 4px;"> 記号(全て)
+                    <label class="random-option">
+                        <input type="checkbox" id="chkSymAll"> 記号(全て)
                     </label>
                 </div>
 
-                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                    <div style="flex: 1;">
+                <div class="random-number-grid">
+                    <div class="random-number-field">
                         <label>📏 文字数</label>
                         <input type="number" id="randomLength" value="20" min="1">
                     </div>
-                    <div style="flex: 1;">
+                    <div class="random-number-field">
                         <label>🔢 発行数（最大100）</label>
                         <input type="number" id="randomCount" value="1" min="1" max="100">
                     </div>
@@ -307,10 +306,10 @@
                 <div class="btn-group">
                     <button id="generateRandomBtn" class="action-btn">⚡ 生成</button>
                 </div>
-                <div id="msgRandom" class="message"></div>
+                <div id="msgRandom" class="message" role="status" aria-live="polite"></div>
 
                 <label>✨ 生成結果</label>
-                <textarea id="outputRandom" readonly class="read-only-box" style="height: 120px;"></textarea>
+                <textarea id="outputRandom" readonly class="read-only-box random-output"></textarea>
                 
                 <div class="btn-row">
                     <button id="copyBtnRandom" class="primary-btn">📋 コピー</button>
@@ -321,6 +320,6 @@
         </div>
     </div>
 
-    <script src="sidepanel.js"></script>
+    <script type="module" src="sidepanel.js"></script>
 </body>
 </html>
