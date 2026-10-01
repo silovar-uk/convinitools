@@ -9,6 +9,19 @@ const html = read('sidepanel.html');
 const js = read('sidepanel.js');
 const css = read('style.css');
 const core = read('app-core.js');
+const bootstrap = read('sidepanel.js');
+
+const featureFiles = [
+    'features/template.js',
+    'features/linebreak.js',
+    'features/zenhan.js',
+    'features/calendar.js',
+    'features/markdown.js',
+    'features/html-stripper.js',
+    'features/random.js'
+];
+const coreFiles = ['core/ui.js', 'core/tabs.js'];
+const moduleFiles = [...coreFiles, ...featureFiles];
 
 const failures = [];
 const assert = (condition, message) => {
@@ -45,15 +58,37 @@ const forbidden = [
     /color-reds/i,
     /theme-reds/i
 ];
+const allRuntimeSource = [
+    html,
+    js,
+    css,
+    core,
+    ...moduleFiles.map(read)
+].join('\n');
+
 for (const pattern of forbidden) {
-    assert(!pattern.test(html + js + css + core), `legacy string remains: ${pattern}`);
+    assert(!pattern.test(allRuntimeSource), `legacy string remains: ${pattern}`);
 }
 
 assert(!/style="/.test(html), 'inline style attributes are not allowed');
+assert(!/fonts\.googleapis\.com/.test(html), 'remote Google Fonts must not be loaded');
 assert(/type="module" src="sidepanel\.js"/.test(html), 'sidepanel.js must load as a module');
 assert(/storage\.session/.test(js), 'pending handoff must use storage.session');
 assert(!/localStorage\.setItem\(LAST_TOOL_KEY/.test(js), 'last tool must not be stored in localStorage');
 assert(/TOOL_REGISTRY/.test(core), 'tool registry is required');
+assert(bootstrap.split('\n').length <= 180, 'sidepanel.js should remain a thin bootstrap');
+assert(!/getElementById\(/.test(bootstrap), 'bootstrap should not own feature DOM queries');
+assert(!/addEventListener\(['"]input['"]/.test(bootstrap), 'bootstrap should not own feature input events');
+
+for (const file of moduleFiles) {
+    const fullPath = path.join(root, file);
+    assert(fs.existsSync(fullPath), `required module is missing: ${file}`);
+}
+
+for (const file of featureFiles) {
+    const source = read(file);
+    assert(/export const init[A-Za-z]+/.test(source), `feature must export an init function: ${file}`);
+}
 
 const registryIds = [...core.matchAll(/\bid: '(content[A-Za-z]+)'/g)].map(m => m[1]);
 assert(registryIds.length === tabTargets.length, 'tool registry and tab count must match');
