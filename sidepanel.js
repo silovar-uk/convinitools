@@ -1,3 +1,10 @@
+import {
+    DEFAULT_TOOL_ID,
+    STORAGE_KEYS,
+    isFreshPendingAction,
+    isValidToolId
+} from './app-core.js';
+
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================
@@ -18,49 +25,92 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 共通: タブ切り替えロジック
     // ==========================================
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const contents = document.querySelectorAll('.tab-content');
-
-    const LAST_TOOL_KEY = 'convinitools:lastTool';
+    const tabBtns = Array.from(document.querySelectorAll('.tab-btn'));
+    const contents = Array.from(document.querySelectorAll('.tab-content'));
 
     const switchTab = (targetId, { persist = true } = {}) => {
-        const targetExists = Array.from(tabBtns).some(
-            b => b.getAttribute('data-target') === targetId
+        if (!isValidToolId(targetId)) return false;
+
+        const targetExists = tabBtns.some(
+            button => button.getAttribute('data-target') === targetId
         );
         if (!targetExists) return false;
 
-        tabBtns.forEach(b => {
-            b.classList.toggle('active', b.getAttribute('data-target') === targetId);
+        tabBtns.forEach((button) => {
+            const isActive = button.getAttribute('data-target') === targetId;
+            button.classList.toggle('active', isActive);
+            button.setAttribute('aria-selected', String(isActive));
+            button.tabIndex = isActive ? 0 : -1;
         });
-        contents.forEach(c => {
-            c.classList.toggle('active', c.id === targetId);
+
+        contents.forEach((content) => {
+            const isActive = content.id === targetId;
+            content.classList.toggle('active', isActive);
+            content.setAttribute('aria-hidden', String(!isActive));
         });
 
         if (persist) {
-            try {
-                localStorage.setItem(LAST_TOOL_KEY, targetId);
-            } catch (e) {
-                console.warn('最後に使ったツールを保存できませんでした', e);
-            }
+            chrome.storage.local.set({
+                [STORAGE_KEYS.LAST_TOOL]: targetId
+            }).catch((error) => {
+                console.warn('最後に使ったツールを保存できませんでした:', error);
+            });
         }
+
         return true;
     };
 
-    let restoredTool = '';
-    try {
-        restoredTool = localStorage.getItem(LAST_TOOL_KEY) || '';
-    } catch (e) {
-        console.warn('最後に使ったツールを読み込めませんでした', e);
-    }
+    const restoreInitialTool = async () => {
+        let restoredTool = '';
 
-    if (!switchTab(restoredTool, { persist: false })) {
-        switchTab('contentTemplate', { persist: false });
-    }
+        try {
+            const stored = await chrome.storage.local.get(STORAGE_KEYS.LAST_TOOL);
+            restoredTool = stored[STORAGE_KEYS.LAST_TOOL] || '';
 
-    tabBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const targetId = btn.getAttribute('data-target');
-            switchTab(targetId);
+            if (!restoredTool) {
+                const legacyTool = localStorage.getItem('convinitools:lastTool') || '';
+                if (legacyTool) {
+                    restoredTool = legacyTool;
+                    await chrome.storage.local.set({
+                        [STORAGE_KEYS.LAST_TOOL]: legacyTool
+                    });
+                    localStorage.removeItem('convinitools:lastTool');
+                }
+            }
+        } catch (error) {
+            console.warn('最後に使ったツールを読み込めませんでした:', error);
+        }
+
+        if (!switchTab(restoredTool, { persist: false })) {
+            switchTab(DEFAULT_TOOL_ID, { persist: false });
+            await chrome.storage.local.set({
+                [STORAGE_KEYS.LAST_TOOL]: DEFAULT_TOOL_ID
+            }).catch(() => {});
+        }
+    };
+
+    const initialToolReady = restoreInitialTool();
+
+    tabBtns.forEach((button) => {
+        button.addEventListener('click', () => {
+            switchTab(button.getAttribute('data-target'));
+        });
+
+        button.addEventListener('keydown', (event) => {
+            if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+
+            event.preventDefault();
+            const currentIndex = tabBtns.indexOf(button);
+            let nextIndex = currentIndex;
+
+            if (event.key === 'ArrowRight') nextIndex = (currentIndex + 1) % tabBtns.length;
+            if (event.key === 'ArrowLeft') nextIndex = (currentIndex - 1 + tabBtns.length) % tabBtns.length;
+            if (event.key === 'Home') nextIndex = 0;
+            if (event.key === 'End') nextIndex = tabBtns.length - 1;
+
+            const nextButton = tabBtns[nextIndex];
+            switchTab(nextButton.getAttribute('data-target'));
+            nextButton.focus();
         });
     });
 
@@ -1799,39 +1849,66 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 自動実行: 右クリックメニューからの連携 (Side Panel版)
     // ==========================================
-    const handlePendingAction = () => {
-        chrome.storage.local.get(['pendingAction'], (result) => {
-            if (result.pendingAction) {
-                const { tabId, text } = result.pendingAction;
-                
-                switchTab(tabId);
+    let lastHandledRequestId = '';
 
-                if (tabId === 'contentLineBreak') {
-                    const el = document.getElementById('inputTextLB');
-                    if (el && text) {
-                        const normalized = normalizeNewlines(text);
-                        el.value = normalized;
-                        if (outputTextLB) {
-                            outputTextLB.value = processLineBreak(normalized);
-                        }
-                    }
-                } else if (tabId === 'contentMarkdown') {
-                    const el = document.getElementById('inputMD');
-                    if (el && text) {
-                        el.innerText = text;
-                        el.dispatchEvent(new Event('input'));
-                    }
-                }
-                chrome.storage.local.remove('pendingAction');
+    const handlePendingAction = async () => {
+        await initialToolReady;
+
+        try {
+            const result = await chrome.storage.session.get(STORAGE_KEYS.PENDING_ACTION);
+            const pendingAction = result[STORAGE_KEYS.PENDING_ACTION];
+            if (!pendingAction) return;
+
+            if (!isFreshPendingAction(pendingAction)) {
+                await chrome.storage.session.remove(STORAGE_KEYS.PENDING_ACTION);
+                return;
             }
-        });
+
+            if (pendingAction.requestId && pendingAction.requestId === lastHandledRequestId) {
+                return;
+            }
+
+            const { requestId, tabId, text } = pendingAction;
+            if (!switchTab(tabId)) {
+                await chrome.storage.session.remove(STORAGE_KEYS.PENDING_ACTION);
+                return;
+            }
+
+            if (tabId === 'contentLineBreak') {
+                const element = document.getElementById('inputTextLB');
+                if (element) {
+                    const normalized = normalizeNewlines(text || '');
+                    element.value = normalized;
+                    if (outputTextLB) {
+                        outputTextLB.value = processLineBreak(normalized);
+                    }
+                    element.focus();
+                }
+            } else if (tabId === 'contentZenHan') {
+                const element = document.getElementById('inputTextZH');
+                if (element) {
+                    element.value = text || '';
+                    element.dispatchEvent(new Event('input', { bubbles: true }));
+                    element.focus();
+                }
+            }
+
+            lastHandledRequestId = requestId || `${tabId}:${pendingAction.createdAt}`;
+            await chrome.storage.session.remove(STORAGE_KEYS.PENDING_ACTION);
+        } catch (error) {
+            console.error('右クリック連携を処理できませんでした:', error);
+        }
     };
 
-    handlePendingAction();
+    chrome.storage.local.remove('pendingAction').catch(() => {});
+    void handlePendingAction();
 
     chrome.storage.onChanged.addListener((changes, areaName) => {
-        if (areaName === 'local' && changes.pendingAction && changes.pendingAction.newValue) {
-            handlePendingAction();
+        if (
+            areaName === 'session' &&
+            changes[STORAGE_KEYS.PENDING_ACTION]?.newValue
+        ) {
+            void handlePendingAction();
         }
     });
 
