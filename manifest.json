@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "テキスト便利変換ツール (Side Panel)",
-  "version": "2.0.0",
-  "description": "改行修正、レッズ検索、縦方向の時間選択と条件カード編集に対応した調整カレンダーなどの便利ツール集（サイドパネル版）",
+  "version": "2.1.0",
+  "description": "定型メール作成、改行修正、全半角変換、調整カレンダー、Markdown変換などをまとめた便利ツール集（サイドパネル版）",
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
