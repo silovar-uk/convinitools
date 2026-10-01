@@ -1,7 +1,6 @@
 /* --- 変数定義: カラフルなテーマカラー --- */
 :root {
     --color-template: #9333ea;  /* Purple: 新機能用 */
-    --color-gemini: #16a34a;    /* Green */
     --color-linebreak: #2563eb; /* Blue */
     --color-zenhan: #4f46e5;    /* Indigo */
     --color-calendar: #ea580c;  /* Orange */
@@ -102,10 +101,6 @@ select:focus-visible {
 .tab-btn.active.color-template { background: var(--color-template); }
 
 
-/* 3. Gemini (Green) */
-.tab-btn.color-gemini { background: #fff; color: var(--color-gemini); }
-.tab-btn.color-gemini:hover { background: color-mix(in srgb, var(--color-gemini), white 95%); }
-.tab-btn.active.color-gemini { background: var(--color-gemini); }
 
 /* 4. LineBreak (Blue) */
 .tab-btn.color-linebreak { background: #fff; color: var(--color-linebreak); }
@@ -170,7 +165,6 @@ h2 {
 }
 /* テーマごとの見出し色 */
 .theme-template h2 { color: var(--color-template); }
-.theme-gemini h2 { color: var(--color-gemini); }
 .theme-linebreak h2 { color: var(--color-linebreak); }
 .theme-zenhan h2 { color: var(--color-zenhan); }
 .theme-calendar h2 { color: var(--color-calendar); }
@@ -214,7 +208,6 @@ input:focus, textarea:focus, .output-div:focus, .rich-editor:focus {
 
 /* テーマごとのフォーカス色 */
 .theme-template .rich-editor:focus { border-color: var(--color-template); box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.1); }
-.theme-gemini input:focus, .theme-gemini textarea:focus { border-color: var(--color-gemini); box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1); }
 .theme-linebreak textarea:focus { border-color: var(--color-linebreak); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
 .theme-zenhan textarea:focus { border-color: var(--color-zenhan); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
 .theme-markdown .output-div:focus { border-color: var(--color-markdown); box-shadow: 0 0 0 3px rgba(219, 39, 119, 0.1); }
@@ -305,7 +298,6 @@ button:disabled {
 /* プライマリボタン */
 .primary-btn { color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 .theme-template .primary-btn { background: var(--color-template); }
-.theme-gemini .primary-btn { background: var(--color-gemini); }
 .theme-linebreak .primary-btn { background: var(--color-linebreak); }
 .theme-zenhan .primary-btn { background: var(--color-zenhan); }
 .theme-calendar .primary-btn { background: var(--color-calendar); }
