@@ -1,9 +1,9 @@
 {
   "name": "convinitools",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "verify": "node scripts/verify.mjs"
+    "verify": "node --check sidepanel.js && node --check background.js && node --check app-core.js && node --check core/ui.js && node --check core/tabs.js && node --check features/template.js && node --check features/linebreak.js && node --check features/zenhan.js && node --check features/calendar.js && node --check features/markdown.js && node --check features/html-stripper.js && node --check features/random.js && node scripts/verify.mjs"
   }
 }
