@@ -13,10 +13,7 @@
         <!-- タブメニュー -->
         <div class="tabs-container">
             <div class="tabs">
-                
-                
-                <button class="tab-btn active color-reds" data-target="contentReds">⚽ レッズ検索</button>
-                <button class="tab-btn color-template" data-target="contentTemplate">📧 テンプレ</button>
+                <button class="tab-btn active color-template" data-target="contentTemplate">📧 テンプレ</button>
                 <button class="tab-btn color-linebreak" data-target="contentLineBreak">✂️ 改行</button>
                 <button class="tab-btn color-zenhan" data-target="contentZenHan">Ａa 全半</button>
                 <button class="tab-btn color-calendar" data-target="contentCalendar">📅 カレンダー</button>
@@ -31,7 +28,7 @@
         <div class="content-area">
             
             <!-- メールテンプレート (Purple) -->
-            <div id="contentTemplate" class="tab-content theme-template">
+            <div id="contentTemplate" class="tab-content active theme-template">
                 <div class="header-area">
                     <h2>📧 定型メール作成</h2>
                     <p class="desc">点線以下は赤字でコピーされます。</p>
@@ -50,39 +47,7 @@
                 <div id="msgTemplate" class="message"></div>
             </div>
 
-            <!-- ⚽ レッズ検索 (Red) -->
-            <div id="contentReds" class="tab-content active theme-reds">
-                <div class="header-area">
-                    <h2>⚽ レッズ検索</h2>
-                    <p class="desc">公式サイトや公式SNSから情報を素早く検索します。</p>
-                </div>
-                
-                <label>🔍 検索キーワード</label>
-                <input type="text" id="redsSearchQuery" placeholder="例：チケット, 移籍, 試合結果">
-
-                <div class="date-controls">
-                    <label>📅 期間指定（任意）</label>
-                    <div class="quick-dates">
-                        <button class="quick-date-btn" data-days="0">今日</button>
-                        <button class="quick-date-btn" data-days="1">昨日</button>
-                        <button class="quick-date-btn" data-days="7">1週間</button>
-                        <button class="quick-date-btn" data-days="30">1ヶ月前〜</button>
-                        <button class="quick-date-btn" id="redsDateClear">クリア</button>
-                    </div>
-                    <div class="date-inputs">
-                        <input type="date" id="redsDateStart">
-                        <span class="date-separator">〜</span>
-                        <input type="date" id="redsDateEnd">
-                    </div>
-                </div>
-
-                <div class="btn-group">
-                    <button id="redsGoogleBtn" class="primary-btn">🌐 サイト内検索</button>
-                    <button id="redsXBtn" class="action-btn">𝕏 公式ポスト検索</button>
-                </div>
-                <div id="msgReds" class="message"></div>
-            </div>
-<!-- 2. 改行修正 (Blue) -->
+            <!-- 2. 改行修正 (Blue) -->
             <div id="contentLineBreak" class="tab-content theme-linebreak">
                 <div class="header-area">
                     <h2>✂️ 改行修正</h2>
