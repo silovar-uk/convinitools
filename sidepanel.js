@@ -21,22 +21,41 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabBtns = document.querySelectorAll('.tab-btn');
     const contents = document.querySelectorAll('.tab-content');
 
-    const switchTab = (targetId) => {
+    const LAST_TOOL_KEY = 'convinitools:lastTool';
+
+    const switchTab = (targetId, { persist = true } = {}) => {
+        const targetExists = Array.from(tabBtns).some(
+            b => b.getAttribute('data-target') === targetId
+        );
+        if (!targetExists) return false;
+
         tabBtns.forEach(b => {
-            if (b.getAttribute('data-target') === targetId) {
-                b.classList.add('active');
-            } else {
-                b.classList.remove('active');
-            }
+            b.classList.toggle('active', b.getAttribute('data-target') === targetId);
         });
         contents.forEach(c => {
-            if (c.id === targetId) {
-                c.classList.add('active');
-            } else {
-                c.classList.remove('active');
-            }
+            c.classList.toggle('active', c.id === targetId);
         });
+
+        if (persist) {
+            try {
+                localStorage.setItem(LAST_TOOL_KEY, targetId);
+            } catch (e) {
+                console.warn('最後に使ったツールを保存できませんでした', e);
+            }
+        }
+        return true;
     };
+
+    let restoredTool = '';
+    try {
+        restoredTool = localStorage.getItem(LAST_TOOL_KEY) || '';
+    } catch (e) {
+        console.warn('最後に使ったツールを読み込めませんでした', e);
+    }
+
+    if (!switchTab(restoredTool, { persist: false })) {
+        switchTab('contentTemplate', { persist: false });
+    }
 
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -1704,89 +1723,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // 7. レッズ検索
-    // ==========================================
-    const redsSearchQuery = document.getElementById('redsSearchQuery');
-    const redsDateStart = document.getElementById('redsDateStart');
-    const redsDateEnd = document.getElementById('redsDateEnd');
-    const redsDateClear = document.getElementById('redsDateClear');
-    const redsGoogleBtn = document.getElementById('redsGoogleBtn');
-    const redsXBtn = document.getElementById('redsXBtn');
-
-    // 日付クリアボタンの処理
-    if (redsDateClear) {
-        redsDateClear.addEventListener('click', () => {
-            if (redsDateStart) redsDateStart.value = '';
-            if (redsDateEnd) redsDateEnd.value = '';
-        });
-    }
-
-    // クイック日付選択ボタンの処理
-    const quickDateBtns = document.querySelectorAll('.quick-date-btn');
-    quickDateBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const days = parseInt(btn.getAttribute('data-days'));
-            if (isNaN(days)) return; // クリアボタン等は除外
-
-            const now = new Date();
-            const start = new Date();
-            start.setDate(now.getDate() - days);
-
-            if (redsDateStart) redsDateStart.value = formatDate(start);
-            if (redsDateEnd) redsDateEnd.value = formatDate(now);
-        });
-    });
-
-    // Googleサイト内検索の実行
-    if (redsGoogleBtn) {
-        redsGoogleBtn.addEventListener('click', () => {
-            const query = redsSearchQuery.value.trim();
-            if (!query) {
-                showMsg('msgReds', 'キーワードを入力してください', true);
-                return;
-            }
-
-            let fullQuery = `${query} site:urawa-reds.co.jp`;
-            
-            if (redsDateStart && redsDateStart.value) {
-                fullQuery += ` after:${redsDateStart.value}`;
-            }
-            if (redsDateEnd && redsDateEnd.value) {
-                fullQuery += ` before:${redsDateEnd.value}`;
-            }
-
-            const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(fullQuery)}`;
-            window.open(searchUrl, '_blank');
-        });
-    }
-
-    // X (Twitter) 公式ポスト検索の実行
-    if (redsXBtn) {
-        redsXBtn.addEventListener('click', () => {
-            const query = redsSearchQuery.value.trim();
-            if (!query) {
-                showMsg('msgReds', 'キーワードを入力してください', true);
-                return;
-            }
-
-            // 公式アカウントからの投稿に限定
-            let xQuery = `${query} from:REDSOFFICIAL`;
-            
-            if (redsDateStart && redsDateStart.value) {
-                xQuery += ` since:${redsDateStart.value}`;
-            }
-            if (redsDateEnd && redsDateEnd.value) {
-                xQuery += ` until:${redsDateEnd.value}`;
-            }
-
-            // f=live を付けることで最新タブを表示
-            const xUrl = `https://x.com/search?q=${encodeURIComponent(xQuery)}&f=live`;
-            window.open(xUrl, '_blank');
-        });
-    }
-
-    // ==========================================
-    // 8. 乱文字生成
+    // 7. 乱文字生成
     // ==========================================
     const chkUpper = document.getElementById('chkUpper');
     const chkLower = document.getElementById('chkLower');
