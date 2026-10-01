@@ -2,113 +2,123 @@
 
 ## Goal
 
-convinitools is a small Chrome Side Panel toolbox. The architecture should optimize for:
+convinitools is a Chrome Side Panel workbench. The architecture optimizes for:
 - fast opening
 - low cognitive load
 - safe feature addition/removal
-- no stale state across browser restarts
-- minimal permissions and external dependencies
+- short-lived transient state
+- minimal cross-feature coupling
+- predictable keyboard and context-menu behavior
 
-## Current structure
+## Runtime structure
 
-- `manifest.json`
-  - Manifest V3
-  - Chrome 116+
-  - loads the Side Panel and module-based Service Worker
+```text
+sidepanel.js             thin bootstrap
+app-core.js              shared registry / IDs / storage keys
 
-- `app-core.js`
-  - single source of truth for tool IDs
-  - context-menu definitions
-  - storage keys
-  - default tool
-  - transient handoff validation
+core/
+  tabs.js                tab navigation + persistence
+  ui.js                  shared UI helpers
 
-- `background.js`
-  - owns browser-level integrations only
-  - creates context menus from `app-core.js`
-  - sends selected text through `chrome.storage.session`
-  - opens the Side Panel after a user gesture
+features/
+  template.js
+  linebreak.js
+  zenhan.js
+  calendar.js
+  markdown.js
+  html-stripper.js
+  random.js
 
-- `sidepanel.html`
-  - semantic UI shell
-  - tabs / tabpanels / form controls
-  - no inline styles
-  - no remote font dependency
+background.js            browser-level integrations only
+```
 
-- `sidepanel.js`
-  - currently owns feature behavior
-  - reads shared definitions from `app-core.js`
-  - restores the last-used tool through `chrome.storage.local`
-  - consumes short-lived handoff data from `chrome.storage.session`
+## Responsibility rule
 
-- `style.css`
-  - presentation only
-  - tool-specific accent themes
-  - keyboard focus and reduced-motion support
+### sidepanel.js
 
-- `scripts/verify.mjs`
-  - structural smoke test for the repository
+Allowed:
+- initialize controllers and features
+- coordinate cross-feature handoff
+- listen for extension-level storage events
+
+Not allowed:
+- feature-specific DOM queries
+- conversion algorithms
+- feature-specific form state
+- large rendering logic
+
+### features/*.js
+
+Each feature:
+- owns its DOM queries
+- owns its event listeners
+- owns its transformation/rendering logic
+- exports one `init...` entry point
+- exposes only the smallest API needed by other modules
+
+Example: right-click handoff does not know the Line Break input DOM ID. It only calls `lineBreak.setText(text)`.
+
+### core/*.js
+
+Reusable UI infrastructure only. It must not know business details of an individual tool.
+
+### app-core.js
+
+Single source of truth shared by the panel and Service Worker:
+- tool IDs
+- default tool
+- context-menu definitions
+- storage keys
+- transient-action TTL
 
 ## State policy
 
-Use the smallest persistence scope that matches the user's expectation.
+- `chrome.storage.local`: durable preference, such as last-used tool
+- `chrome.storage.session`: transient handoff from context menu
+- legacy `localStorage`: migration read only; do not add new writes
 
-- `chrome.storage.local`
-  - settings and durable UI preference
-  - example: last-used tool
+Transient handoffs expire after 60 seconds.
 
-- `chrome.storage.session`
-  - transient browser-session state
-  - example: selected text handed off from a context menu
+## UX / Shuhari
 
-Do not use localStorage for new state.
+### Shu
 
-## Tool registry rule
+Preserve familiar controls and existing output behavior. Refactors should not force the user to relearn a tool.
 
-A tool ID must be registered in `app-core.js` and must have exactly one matching:
-- tab button
-- tab panel
+### Ha
 
-Context-menu actions must also be declared in the registry. Do not hard-code tool IDs separately in `background.js`.
+Reduce accidental coupling:
+- inactive tabs stay quiet
+- individual tools own their own code
+- browser integration uses public feature APIs instead of reaching into DOM
+- keyboard navigation follows tab conventions
 
-## UX rule
+### Ri
 
-The Side Panel is a workbench, not a dashboard.
+The next stage is capability-driven composition:
+- registry metadata can declare feature capabilities
+- context-menu integration can be derived from capabilities
+- optional command palette / quick switcher can call the same feature APIs
+- tests can target a feature without booting the entire panel
 
-- inactive tools stay visually quiet
-- the current tool owns the accent color
-- reopening returns to the last-used tool
-- right-click handoffs focus the destination input immediately
-- keyboard tab navigation follows the standard Left / Right / Home / End pattern
-- transient actions expire instead of surprising the user later
+The goal is not abstraction for its own sake. The goal is local change: editing one tool should normally require editing one feature module.
 
-## Shuhari roadmap
+## Verification
 
-### Shu — preserve reliability
+Run:
 
-Completed:
-- one valid default tool
-- semantic tab structure
-- durable and transient state separated
-- no remote font request
-- inline styles removed
-- automated structural checks
+```bash
+npm run verify
+```
 
-### Ha — separate feature modules
-
-Next refactor target:
-1. extract the calendar first because it is the largest and most stateful feature
-2. extract Markdown conversion second because its sanitization rules are self-contained
-3. move remaining simple tools into small `features/*.js` modules
-4. keep `sidepanel.js` as a thin bootstrap layer
-
-Each extraction should preserve existing DOM IDs and behavior before any UI redesign.
-
-### Ri — capability-driven workbench
-
-After modularization:
-- each feature exports metadata + an `init()` function
-- the registry can drive tabs, context menus, keyboard routing, and future commands
-- adding or removing a tool becomes a local change instead of editing multiple unrelated files
-
-The end state is not “more abstraction.” The end state is a tool that is easier to change without the user noticing that anything complicated happened behind the scenes.
+It checks syntax plus structural invariants, including:
+- Manifest V3
+- tool registry ↔ tabs ↔ panels
+- unique IDs
+- one initial active tool
+- no legacy Reds search residue
+- no unused theme CSS
+- no inline style attributes
+- required modules exist
+- every feature exports an initializer
+- sidepanel.js stays thin
