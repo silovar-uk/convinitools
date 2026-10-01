@@ -1,0 +1,9 @@
+{
+  "name": "convinitools",
+  "version": "2.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "verify": "node scripts/verify.mjs"
+  }
+}
